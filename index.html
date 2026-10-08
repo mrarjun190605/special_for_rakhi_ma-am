@@ -1,0 +1,421 @@
+<!-- <!-- <!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farewell Ma'am 💐</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#2b1b3d;--bg2:#7a3e65;--gold:#f5d98b;--txt:#fff7ec}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;color:var(--txt);background:linear-gradient(135deg,var(--bg1),var(--bg2));padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.frame{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 28px 90px;opacity:0;visibility:hidden;transform:translateY(30px);transition:all .8s ease;overflow-y:auto}
+.frame.active{opacity:1;visibility:visible;transform:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--gold)}
+h1{font-size:clamp(2.2rem,8vw,4.5rem)}
+h2{font-size:clamp(1.6rem,5vw,2.6rem);margin-bottom:18px}
+.big{font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:300;max-width:700px;line-height:1.7;margin-top:14px}
+.speech{max-width:760px;font-size:clamp(1rem,2.6vw,1.2rem);line-height:1.9;font-weight:300;text-align:left}
+.speech p{margin-bottom:14px}
+.card{max-width:520px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);border:1px solid rgba(245,217,139,.4);border-radius:22px;padding:26px}
+.card img{width:170px;height:170px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#4a3260}
+.card .t{font-style:italic;font-family:'Playfair Display',serif;font-size:1.25rem;line-height:1.6;margin:18px 0 10px}
+.card .n{color:var(--gold);font-weight:500}
+video{width:min(92vw,820px);max-height:66vh;border-radius:18px;border:3px solid var(--gold);background:#000}
+#unmute{margin-top:12px;display:none;padding:8px 18px;border-radius:20px;border:0;background:var(--gold);color:#2b1b3d;font-weight:500}
+nav{position:fixed;bottom:18px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:16px;z-index:5;padding-bottom:env(safe-area-inset-bottom)}
+nav button{border:1px solid var(--gold);background:rgba(0,0,0,.3);color:var(--gold);width:46px;height:46px;border-radius:50%;font-size:1.3rem;cursor:pointer}
+#dots{font-size:.85rem;color:var(--gold);min-width:60px}
+.petal{position:fixed;top:-20px;font-size:1.2rem;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.frame.list{justify-content:flex-start;padding-top:28px}
+.frame.list .card{width:100%;max-width:520px;margin:0 auto 26px;flex-shrink:0}
+.hint{font-size:.85rem;opacity:.7;margin-bottom:16px}
+#gate{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,var(--bg1),var(--bg2));cursor:pointer;padding:24px}
+#gate button{margin-top:26px;padding:14px 34px;border-radius:30px;border:0;background:var(--gold);color:#2b1b3d;font:500 1.05rem Poppins,sans-serif;cursor:pointer}
+#mbtn{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:6;border:1px solid var(--gold);background:rgba(0,0,0,.3);color:var(--gold);width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="gate"><h1>💐</h1><p class="big">Ek chhoti si yaad, <span id="gt"></span></p><button>Open karo</button></div>
+<button id="mbtn" aria-label="Music">🔊</button>
+<audio id="bgm" loop></audio>
+<div id="app"></div>
+<nav><button id="prev" aria-label="Previous">‹</button><span id="dots"></span><button id="next" aria-label="Next">›</button></nav>
+
+<script>
+/* ========= ✏️ YAHAN EDIT KARO ========= */
+const TEACHER = "Rakhi Ma'am";          // ma'am ka naam
+const SESSION = "2024 – 2027";
+const OPENING_THOUGHT = "Kuch log teacher nahi hote, zindagi ka raasta ban jaate hain.";
+const SPEECH_TITLE = "Farewell Speech";
+const SPEECH = [
+  "Aadarneeya " + TEACHER + ", aaj ka din hum sab ke liye khushi aur udaasi, dono lekar aaya hai.",
+  "Aapne humein sirf padhaya nahi, balki sochna, girkar uthna aur khud par vishwas karna sikhaya.",
+  "Aapki class ki hansi, aapki daant mein chhupa pyaar, aur har mushkil mein aapka saath — ye sab hamesha yaad rahega.",
+  "Aap college chhod rahi hain, par humare dil mein aapki jagah hamesha rahegi. Aapka naya safar khushiyon se bhara ho."
+];
+/* Students: photo = photos folder me image ka naam (ya koi bhi URL). Jitne chaho utne add karo */
+const STUDENTS = [
+  {name:"FOR AMAN ", photo:"photos/s1.jpg", thought:"Ma'am, aapne humein jeena sikhaya, sirf padhna nahi."},
+  {name:"FOR RAJ ", photo:"photos/s2.jpg", thought:"Aapki class sabse special thi, hum aapko bahut miss karenge."},
+  {name:"FOR SHIVAM ", photo:"photos/s3.jpg", thought:"Thank you ma'am, har mushkil mein saath dene ke liye."},
+  {name:"FOR MRITYUNJAY", photo:"photos/s4.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR ARJUN", photo:"photos/s5.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR SAHJAD", photo:"photos/s6.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR SHALINEE", photo:"photos/s7.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR KHUSHI", photo:"photos/s8.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR YUTIKA", photo:"photos/s9.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR AMRITA", photo:"photos/s10.jpg", thought:"Aap hamesha humare liye inspiration rahengi."}
+];
+const MUSIC = "music.mp3"; // background music (isi folder me rakho)
+const VIDEO = "video.mp4";   // final video ka file naam (isi folder me rakho)
+/* ====================================== */
+
+const frames = [];
+frames.push(`<h2 style="letter-spacing:4px;font-size:1rem;font-family:Poppins">SESSION</h2><h1>${SESSION}</h1><p class="big">A journey with ${TEACHER} 💐</p>`);
+frames.push(`<p class="big" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.4rem,4.5vw,2.4rem)">“${OPENING_THOUGHT}”</p>`);
+frames.push(`<h2>${SPEECH_TITLE}</h2><div class="speech">${SPEECH.map(p=>`<p>${p}</p>`).join("")}</div>`);
+frames.push(`<h2>Students ke dil se 💌</h2><p class="hint">neeche scroll karo ↓</p>`+STUDENTS.map(s=>`<div class="card"><img src="${s.photo}" alt="${s.name}" onerror="this.style.opacity=.3"><p class="t">“${s.thought}”</p><p class="n">— ${s.name}</p></div>`).join(""));
+frames.push(`<h2>Wishing you a happy life, ma'am 🌸</h2><video id="vid" src="${VIDEO}" controls playsinline></video><button id="unmute">🔊 Sound on</button>`);
+
+const app=document.getElementById('app');
+app.innerHTML=frames.map((f,k)=>`<section class="frame${k===3?' list':''}">${f}</section>`).join("");
+const els=[...document.querySelectorAll('.frame')];
+let i=0;
+const bgm=document.getElementById('bgm'),mbtn=document.getElementById('mbtn');
+bgm.src=MUSIC;bgm.volume=.6;let musicOn=true;
+document.getElementById('gt').textContent=TEACHER;
+document.getElementById('gate').onclick=function(){this.remove();bgm.play().catch(()=>{});};
+mbtn.onclick=()=>{musicOn=!musicOn;mbtn.textContent=musicOn?'🔊':'🔇';if(!musicOn)bgm.pause();else if(i!==els.length-1)bgm.play().catch(()=>{});};
+function show(n){
+  i=Math.max(0,Math.min(els.length-1,n));
+  els.forEach((e,k)=>e.classList.toggle('active',k===i));
+  document.getElementById('dots').textContent=(i+1)+" / "+els.length;
+  const v=document.getElementById('vid'),u=document.getElementById('unmute');
+  if(i===els.length-1){
+    v.muted=false;bgm.pause();
+    v.play().catch(()=>{v.muted=true;v.play().catch(()=>{});u.style.display='inline-block';});
+    petals();
+  } else {v.pause();u.style.display='none';if(musicOn&&!document.getElementById('gate'))bgm.play().catch(()=>{});}
+}
+document.getElementById('unmute').onclick=e=>{const v=document.getElementById('vid');v.muted=false;v.play();e.target.style.display='none'};
+function petals(){for(let k=0;k<25;k++){const p=document.createElement('span');p.className='petal';p.textContent=['🌸','💐','✨','🌼'][k%4];p.style.left=Math.random()*100+'vw';p.style.animationDuration=(4+Math.random()*4)+'s';document.body.appendChild(p);setTimeout(()=>p.remove(),8500)}}
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(i+1);if(e.key==='ArrowLeft')show(i-1)});
+let x0;let y0;addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY});
+addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(d)>80&&Math.abs(d)>Math.abs(dy)*2)show(i+(d<0?1:-1))});
+show(0);
+</script>
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farewell Ma'am 💐</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#2b1b3d;--bg2:#7a3e65;--gold:#f5d98b;--txt:#fff7ec}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;color:var(--txt);background:linear-gradient(135deg,var(--bg1),var(--bg2));padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.frame{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 28px 90px;opacity:0;visibility:hidden;transform:translateY(30px);transition:all .8s ease;overflow-y:auto}
+.frame.active{opacity:1;visibility:visible;transform:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--gold)}
+h1{font-size:clamp(2.2rem,8vw,4.5rem)}
+h2{font-size:clamp(1.6rem,5vw,2.6rem);margin-bottom:18px}
+.big{font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:300;max-width:700px;line-height:1.7;margin-top:14px}
+.speech{max-width:760px;font-size:clamp(1rem,2.6vw,1.2rem);line-height:1.9;font-weight:300;text-align:left}
+.speech p{margin-bottom:14px}
+.card{max-width:520px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);border:1px solid rgba(245,217,139,.4);border-radius:22px;padding:26px}
+.card img{width:170px;height:170px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#4a3260}
+.card .t{font-style:italic;font-family:'Playfair Display',serif;font-size:1.25rem;line-height:1.6;margin:18px 0 10px}
+.card .n{color:var(--gold);font-weight:500}
+video{width:min(92vw,820px);max-height:66vh;border-radius:18px;border:3px solid var(--gold);background:#000}
+#unmute{margin-top:12px;display:none;padding:8px 18px;border-radius:20px;border:0;background:var(--gold);color:#2b1b3d;font-weight:500}
+nav{position:fixed;bottom:18px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:16px;z-index:5;padding-bottom:env(safe-area-inset-bottom)}
+nav button{border:1px solid var(--gold);background:rgba(0,0,0,.3);color:var(--gold);width:46px;height:46px;border-radius:50%;font-size:1.3rem;cursor:pointer}
+#dots{font-size:.85rem;color:var(--gold);min-width:60px}
+.petal{position:fixed;top:-20px;font-size:1.2rem;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.frame.list{justify-content:flex-start;padding-top:28px}
+.frame.list .card{width:100%;max-width:520px;margin:0 auto 26px;flex-shrink:0}
+.hint{font-size:.85rem;opacity:.7;margin-bottom:16px}
+#gate{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,var(--bg1),var(--bg2));cursor:pointer;padding:24px}
+#gate button{margin-top:26px;padding:14px 34px;border-radius:30px;border:0;background:var(--gold);color:#2b1b3d;font:500 1.05rem Poppins,sans-serif;cursor:pointer}
+#mbtn{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:6;border:1px solid var(--gold);background:rgba(0,0,0,.3);color:var(--gold);width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+.album{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;max-width:960px;margin:0 auto}
+.pol{background:#fffaf0;padding:10px 10px 14px;width:min(78vw,250px);border-radius:4px;box-shadow:0 8px 22px rgba(0,0,0,.45);transform:rotate(-3deg);flex-shrink:0}
+.pol:nth-child(even){transform:rotate(3deg)}
+.pol img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#d9cbbd}
+.pol p{color:#3a2a2a;font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;margin-top:10px}
+</style>
+</head>
+<body>
+<div id="gate"><h1>💐</h1><p class="big">Ek chhoti si yaad, <span id="gt"></span></p><button>Open karo</button></div>
+<button id="mbtn" aria-label="Music">🔊</button>
+<audio id="bgm" loop></audio>
+<div id="app"></div>
+<nav><button id="prev" aria-label="Previous">‹</button><span id="dots"></span><button id="next" aria-label="Next">›</button></nav>
+
+<script>
+/* ========= ✏️ YAHAN EDIT KARO ========= */
+const TEACHER = "Rakhi Ma'am";          // ma'am ka naam
+const SESSION = "2024 – 2027";
+const OPENING_THOUGHT = "Kuch log teacher nahi hote, zindagi ka raasta ban jaate hain.";
+const SPEECH_TITLE = "Farewell Speech";
+const SPEECH = [
+  "Aadarneeya " + TEACHER + ", aaj ka din hum sab ke liye khushi aur udaasi, dono lekar aaya hai.",
+  "Aapne humein sirf padhaya nahi, balki sochna, girkar uthna aur khud par vishwas karna sikhaya.",
+  "Aapki class ki hansi, aapki daant mein chhupa pyaar, aur har mushkil mein aapka saath — ye sab hamesha yaad rahega.",
+  "Aap college chhod rahi hain, par humare dil mein aapki jagah hamesha rahegi. Aapka naya safar khushiyon se bhara ho."
+];
+/* Students: photo = photos folder me image ka naam (ya koi bhi URL). Jitne chaho utne add karo */
+const STUDENTS = [
+//   {name:"Student 1", photo:"photos/s1.jpg", thought:"Ma'am, aapne humein jeena sikhaya, sirf padhna nahi."},
+//   {name:"Student 2", photo:"photos/s2.jpg", thought:"Aapki class sabse special thi, hum aapko bahut miss karenge."},
+//   {name:"Student 3", photo:"photos/s3.jpg", thought:"Thank you ma'am, har mushkil mein saath dene ke liye."},
+//   {name:"Student 4", photo:"photos/s4.jpg", thought:"Aap hamesha humare liye inspiration rahengi."}
+  {name:"FOR AMAN ", photo:"photos_s1.jpg", thought:"Ma'am, aapne humein jeena sikhaya, sirf padhna nahi."},
+  {name:"FOR RAJ ", photo:"photos_s2.jpg", thought:"Aapki class sabse special thi, hum aapko bahut miss karenge."},
+  {name:"FOR SHIVAM ", photo:"photos_s3.jpg", thought:"Thank you ma'am, har mushkil mein saath dene ke liye."},
+  {name:"FOR MRITYUNJAY", photo:"photos_s4.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR ARJUN", photo:"photos_s5.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR SAHJAD", photo:"photos_s6.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR SHALINEE", photo:"photos_s7.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR KHUSHI", photo:"photos_s8.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR YUTIKA", photo:"photos_s9.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR AMRITA", photo:"photos_s10.jpg", thought:"Aap hamesha humare liye inspiration rahengi."}
+];
+/* Ma'am ke photos (album): jitne chaho utne add karo */
+const ALBUM = [
+  {photo:"photos_maam1.jpg", caption:"Class ki yaadein"},
+  {photo:"photos_maam2.jpg", caption:"Hamari favourite ma'am"},
+  {photo:"photos_maam3.jpg", caption:"Smile jo yaad rahegi"}
+  {photo:"photos_maam4.jpg", caption:"Hamari favourite ma'am"},
+];
+const MUSIC = "music.mp3"; // background music (isi folder me rakho)
+const VIDEO = "video.mp4";   // final video ka file naam (isi folder me rakho)
+/* ====================================== */
+
+const frames = [];
+frames.push(`<h2 style="letter-spacing:4px;font-size:1rem;font-family:Poppins">SESSION</h2><h1>${SESSION}</h1><p class="big">A journey with ${TEACHER} 💐</p>`);
+frames.push(`<h2>${TEACHER} ki yaadein 📸</h2><div class="album">`+ALBUM.map(a=>`<div class="pol"><img src="${a.photo}" alt="" onerror="this.style.opacity=.3"><p>${a.caption}</p></div>`).join("")+`</div><i data-scroll></i>`);
+frames.push(`<p class="big" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.4rem,4.5vw,2.4rem)">“${OPENING_THOUGHT}”</p>`);
+frames.push(`<h2>${SPEECH_TITLE}</h2><div class="speech">${SPEECH.map(p=>`<p>${p}</p>`).join("")}</div>`);
+frames.push(`<h2>Students ke dil se 💌</h2><p class="hint">neeche scroll karo ↓</p><i data-scroll></i>`+STUDENTS.map(s=>`<div class="card"><img src="${s.photo}" alt="${s.name}" onerror="this.style.opacity=.3"><p class="t">“${s.thought}”</p><p class="n">— ${s.name}</p></div>`).join(""));
+frames.push(`<h2>Wishing you a happy life, ma'am 🌸</h2><video id="vid" src="${VIDEO}" controls playsinline></video><button id="unmute">🔊 Sound on</button>`);
+
+const app=document.getElementById('app');
+app.innerHTML=frames.map((f,k)=>`<section class="frame${f.includes('data-scroll')?' list':''}">${f}</section>`).join("");
+const els=[...document.querySelectorAll('.frame')];
+let i=0;
+const bgm=document.getElementById('bgm'),mbtn=document.getElementById('mbtn');
+bgm.src=MUSIC;bgm.volume=.6;let musicOn=true;
+document.getElementById('gt').textContent=TEACHER;
+document.getElementById('gate').onclick=function(){this.remove();bgm.play().catch(()=>{});};
+mbtn.onclick=()=>{musicOn=!musicOn;mbtn.textContent=musicOn?'🔊':'🔇';if(!musicOn)bgm.pause();else if(i!==els.length-1)bgm.play().catch(()=>{});};
+function show(n){
+  i=Math.max(0,Math.min(els.length-1,n));
+  els.forEach((e,k)=>e.classList.toggle('active',k===i));
+  document.getElementById('dots').textContent=(i+1)+" / "+els.length;
+  const v=document.getElementById('vid'),u=document.getElementById('unmute');
+  if(i===els.length-1){
+    v.muted=false;bgm.pause();
+    v.play().catch(()=>{v.muted=true;v.play().catch(()=>{});u.style.display='inline-block';});
+    petals();
+  } else {v.pause();u.style.display='none';if(musicOn&&!document.getElementById('gate'))bgm.play().catch(()=>{});}
+}
+document.getElementById('unmute').onclick=e=>{const v=document.getElementById('vid');v.muted=false;v.play();e.target.style.display='none'};
+function petals(){for(let k=0;k<25;k++){const p=document.createElement('span');p.className='petal';p.textContent=['🌸','💐','✨','🌼'][k%4];p.style.left=Math.random()*100+'vw';p.style.animationDuration=(4+Math.random()*4)+'s';document.body.appendChild(p);setTimeout(()=>p.remove(),8500)}}
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(i+1);if(e.key==='ArrowLeft')show(i-1)});
+let x0;let y0;addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY});
+addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(d)>80&&Math.abs(d)>Math.abs(dy)*2)show(i+(d<0?1:-1))});
+show(0);
+</script>
+</body>
+</html>  -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Farewell Ma'am 💐</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg1:#2b1b3d;--bg2:#7a3e65;--gold:#f5d98b;--txt:#fff7ec}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%;overflow:hidden;font-family:'Poppins',sans-serif;color:var(--txt);background:linear-gradient(135deg,var(--bg1),var(--bg2));padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+.frame{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 28px 90px;opacity:0;visibility:hidden;transform:translateY(30px);transition:all .8s ease;overflow-y:auto}
+.frame.active{opacity:1;visibility:visible;transform:none}
+h1,h2{font-family:'Playfair Display',serif;color:var(--gold)}
+h1{font-size:clamp(2.2rem,8vw,4.5rem)}
+h2{font-size:clamp(1.6rem,5vw,2.6rem);margin-bottom:18px}
+.big{font-size:clamp(1.1rem,3.5vw,1.6rem);font-weight:300;max-width:700px;line-height:1.7;margin-top:14px}
+.speech{max-width:760px;font-size:clamp(1rem,2.6vw,1.2rem);line-height:1.9;font-weight:300;text-align:left}
+.speech p{margin-bottom:14px}
+.card{max-width:520px;background:rgba(255,255,255,.1);backdrop-filter:blur(6px);border:1px solid rgba(245,217,139,.4);border-radius:22px;padding:26px}
+.card img{width:170px;height:170px;border-radius:50%;object-fit:cover;border:4px solid var(--gold);background:#4a3260}
+.card .t{font-style:italic;font-family:'Playfair Display',serif;font-size:1.25rem;line-height:1.6;margin:18px 0 10px}
+.card .n{color:var(--gold);font-weight:500}
+video{width:min(92vw,820px);max-height:66vh;border-radius:18px;border:3px solid var(--gold);background:#000}
+#unmute{margin-top:12px;display:none;padding:8px 18px;border-radius:20px;border:0;background:var(--gold);color:#2b1b3d;font-weight:500}
+nav{position:fixed;bottom:18px;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:16px;z-index:5;padding-bottom:env(safe-area-inset-bottom)}
+nav button{border:1px solid var(--gold);background:rgba(0,0,0,.3);color:var(--gold);width:46px;height:46px;border-radius:50%;font-size:1.3rem;cursor:pointer}
+#dots{font-size:.85rem;color:var(--gold);min-width:60px}
+.petal{position:fixed;top:-20px;font-size:1.2rem;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(360deg)}}
+.frame.list{justify-content:flex-start;padding-top:28px}
+.frame.list .card{width:100%;max-width:520px;margin:0 auto 26px;flex-shrink:0}
+.hint{font-size:.85rem;opacity:.7;margin-bottom:16px}
+#gate{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;background:linear-gradient(135deg,var(--bg1),var(--bg2));cursor:pointer;padding:24px}
+#gate button{margin-top:26px;padding:14px 34px;border-radius:30px;border:0;background:var(--gold);color:#2b1b3d;font:500 1.05rem Poppins,sans-serif;cursor:pointer}
+#mbtn{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;z-index:6;border:1px solid var(--gold);background:rgba(0,0,0,.3);color:var(--gold);width:42px;height:42px;border-radius:50%;font-size:1.1rem;cursor:pointer}
+.album{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;max-width:960px;margin:0 auto}
+.pol{background:#fffaf0;padding:10px 10px 14px;width:min(78vw,250px);border-radius:4px;box-shadow:0 8px 22px rgba(0,0,0,.45);transform:rotate(-3deg);flex-shrink:0}
+.pol:nth-child(even){transform:rotate(3deg)}
+.pol img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;background:#d9cbbd}
+.pol p{color:#3a2a2a;font-family:'Playfair Display',serif;font-style:italic;font-size:1rem;margin-top:10px}
+</style>
+</head>
+<body>
+<div id="gate"><h1>💐</h1><p class="big">Ek chhoti si yaad, <span id="gt"></span></p><button>Open karo</button></div>
+<button id="mbtn" aria-label="Music">🔊</button>
+<audio id="bgm" loop></audio>
+<div id="app"></div>
+<nav><button id="prev" aria-label="Previous">‹</button><span id="dots"></span><button id="next" aria-label="Next">›</button></nav>
+
+<script>
+/* ========= ✏️ YAHAN EDIT KARO ========= */
+const TEACHER = "Rakhi Ma'am";          // ma'am ka naam
+const SESSION = "2024 – 2027";
+const OPENING_THOUGHT = "Kuch log teacher nahi hote, zindagi ka raasta ban jaate hain.";
+const SPEECH_TITLE = "Farewell Speech";
+const SPEECH = [
+  "Aadarneeya " + TEACHER + ", aaj ka din hum sab ke liye khushi aur udaasi, dono lekar aaya hai.",
+  "Aapne humein sirf padhaya nahi, balki sochna, girkar uthna aur khud par vishwas karna sikhaya.",
+  "Aapki class ki hansi, aapki daant mein chhupa pyaar, aur har mushkil mein aapka saath — ye sab hamesha yaad rahega.",
+  "Aap college chhod rahi hain, par humare dil mein aapki jagah hamesha rahegi. Aapka naya safar khushiyon se bhara ho."
+];
+/* Students: photo = photos folder me image ka naam (ya koi bhi URL). Jitne chaho utne add karo */
+const STUDENTS = [
+//   {name:"Student 1", photo:"photos/s1.jpg", thought:"Ma'am, aapne humein jeena sikhaya, sirf padhna nahi."},
+//   {name:"Student 2", photo:"photos/s2.jpg", thought:"Aapki class sabse special thi, hum aapko bahut miss karenge."},
+//   {name:"Student 3", photo:"photos/s3.jpg", thought:"Thank you ma'am, har mushkil mein saath dene ke liye."},
+//   {name:"Student 4", photo:"photos/s4.jpg", thought:"Aap hamesha humare liye inspiration rahengi."}
+{name:"FOR AMAN ", photo:"photos_s1.jpg", thought:"Ma'am, aapne humein jeena sikhaya, sirf padhna nahi."},
+  {name:"FOR RAJ ", photo:"photos_s2.jpg", thought:"Aapki class sabse special thi, hum aapko bahut miss karenge."},
+  {name:"FOR SHIVAM ", photo:"photos_s3.jpg", thought:"Thank you ma'am, har mushkil mein saath dene ke liye."},
+  {name:"FOR MRITYUNJAY", photo:"photos_s4.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR ARJUN", photo:"photos_s5.jpg", thought:"wishing you a happy life, ma'am 🌸"},
+  {name:"FOR SAHJAD", photo:"photos_s6.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR SHALINEE", photo:"photos_s7.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR KHUSHI", photo:"photos_s8.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR YUTIKA", photo:"photos_s9.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR AMRITA", photo:"photos_s10.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR AMRITA", photo:"photos_s11.jpg", thought:"Aap hamesha humare liye inspiration rahengi."},
+  {name:"FOR AMRITA", photo:"photos_s12.jpg", thought:"Aap hamesha humare liye inspiration rahengi."}
+];
+/* Ma'am ke photos (album): jitne chaho utne add karo */
+const ALBUM = [
+  {photo:"photos_maam1.jpg", caption:"Class ki yaadein"},
+  {photo:"photos_maam2.jpg", caption:"Hamari favourite ma'am"},
+  {photo:"photos_maam3.jpg", caption:"Smile jo yaad rahegi"},
+  {photo:"photos_maam4.jpg", caption:"Smile jo yaad rahegi"},
+  {photo:"photos_maam5.jpg", caption:"Smile jo yaad rahegi"},
+  {photo:"photos_maam6.jpg", caption:"Smile jo yaad rahegi"},
+  {photo:"photos_maam7.jpg", caption:"Smile jo yaad rahegi"},
+  {photo:"photos_maam8.jpg", caption:"Smile jo yaad rahegi"},
+  {photo:"photos_maam9.jpg", caption:"Smile jo yaad rahegi"}
+];
+const MUSIC = "Yaariyaan - 8K 4K Music Video Cocktail Deepika Padukone, Saif Ali Khan, Diana Penty Pritam.mp3"; // background music (isi folder me rakho)
+const VIDEO = "videochip.mp4";   // final video ka file naam (isi folder me rakho)
+/* ====================================== */
+
+const frames = [];
+frames.push(`<h2 style="letter-spacing:4px;font-size:1rem;font-family:Poppins">SESSION</h2><h1>${SESSION}</h1><p class="big">A journey with ${TEACHER} 💐</p>`);
+frames.push(`<h2>${TEACHER} ki yaadein 📸</h2><div class="album">`+ALBUM.map(a=>`<div class="pol"><img src="${a.photo}" alt="" onerror="this.style.opacity=.3"><p>${a.caption}</p></div>`).join("")+`</div><i data-scroll></i>`);
+frames.push(`<p class="big" style="font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.4rem,4.5vw,2.4rem)">“${OPENING_THOUGHT}”</p>`);
+frames.push(`<h2>${SPEECH_TITLE}</h2><div class="speech">${SPEECH.map(p=>`<p>${p}</p>`).join("")}</div>`);
+frames.push(`<h2>Students ke dil se 💌</h2><p class="hint">neeche scroll karo ↓</p><i data-scroll></i>`+STUDENTS.map(s=>`<div class="card"><img src="${s.photo}" alt="${s.name}" onerror="this.style.opacity=.3"><p class="t">“${s.thought}”</p><p class="n">— ${s.name}</p></div>`).join(""));
+frames.push(`<h2>Wishing you a happy life, ma'am 🌸</h2><video id="vid" src="${VIDEO}" controls playsinline></video><button id="unmute">🔊 Sound on</button>`);
+
+const app=document.getElementById('app');
+app.innerHTML=frames.map((f,k)=>`<section class="frame${f.includes('data-scroll')?' list':''}">${f}</section>`).join("");
+const els=[...document.querySelectorAll('.frame')];
+let i=0;
+const bgm=document.getElementById('bgm'),mbtn=document.getElementById('mbtn');
+bgm.src=MUSIC;bgm.volume=.6;let musicOn=true;
+document.getElementById('gt').textContent=TEACHER;
+document.getElementById('gate').onclick=function(){this.remove();bgm.play().catch(()=>{});};
+mbtn.onclick=()=>{musicOn=!musicOn;mbtn.textContent=musicOn?'🔊':'🔇';if(!musicOn)bgm.pause();else if(i!==els.length-1)bgm.play().catch(()=>{});};
+function show(n){
+  i=Math.max(0,Math.min(els.length-1,n));
+  els.forEach((e,k)=>e.classList.toggle('active',k===i));
+  document.getElementById('dots').textContent=(i+1)+" / "+els.length;
+  const v=document.getElementById('vid'),u=document.getElementById('unmute');
+  if(i===els.length-1){
+    v.muted=false;bgm.pause();
+    v.play().catch(()=>{v.muted=true;v.play().catch(()=>{});u.style.display='inline-block';});
+    petals();
+  } else {v.pause();u.style.display='none';if(musicOn&&!document.getElementById('gate'))bgm.play().catch(()=>{});}
+}
+document.getElementById('unmute').onclick=e=>{const v=document.getElementById('vid');v.muted=false;v.play();e.target.style.display='none'};
+function petals(){for(let k=0;k<25;k++){const p=document.createElement('span');p.className='petal';p.textContent=['🌸','💐','✨','🌼'][k%4];p.style.left=Math.random()*100+'vw';p.style.animationDuration=(4+Math.random()*4)+'s';document.body.appendChild(p);setTimeout(()=>p.remove(),8500)}}
+document.getElementById('next').onclick=()=>show(i+1);
+document.getElementById('prev').onclick=()=>show(i-1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')show(i+1);if(e.key==='ArrowLeft')show(i-1)});
+let x0;let y0;addEventListener('touchstart',e=>{x0=e.touches[0].clientX;y0=e.touches[0].clientY});
+addEventListener('touchend',e=>{const d=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;if(Math.abs(d)>80&&Math.abs(d)>Math.abs(dy)*2)show(i+(d<0?1:-1))});
+show(0);
+</script>
+</body>
+</html>
